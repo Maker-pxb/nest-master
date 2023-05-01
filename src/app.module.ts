@@ -9,6 +9,7 @@ import { EventsModule } from './events/events.module';
 import { AppJapanService } from './app.japan.service';
 import { AppDummy } from './app.dummy';
 import { SchoolModule } from './school/school.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SchoolModule } from './school/school.module';
     }),
     EventsModule,
     SchoolModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
