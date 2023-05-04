@@ -105,11 +105,12 @@ export class EventsService {
   }
 
   public async createEvent(input: CreateEventDto, user: User): Promise<Event> {
-    return await this.eventsRepository.save({
+    const result = await this.eventsRepository.save({
       ...input,
       organizer: user,
       when: new Date(input.when),
     });
+    return result;
   }
 
   public async updateEvent(

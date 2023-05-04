@@ -13,4 +13,6 @@ export class CreateUserDto {
   lastName: string;
   @IsEmail()
   email: string;
+  @Length(4)
+  captcha?: string;
 }

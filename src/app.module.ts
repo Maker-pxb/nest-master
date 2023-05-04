@@ -10,6 +10,7 @@ import { AppJapanService } from './app.japan.service';
 import { AppDummy } from './app.dummy';
 import { SchoolModule } from './school/school.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     EventsModule,
     SchoolModule,
     AuthModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

@@ -30,16 +30,15 @@ import { ListEvent } from './input/list.event';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { User } from 'src/auth/user.entity';
 import { AuthGuardJwt } from 'src/auth/auth-guard.jwt';
-import { version } from 'os';
 
 /**
- * version: string
- * 版本控制
+ * @SerializeOptions() 是 NestJS 中的一个装饰器，用于指定响应对象的序列化选项。
+ * 其中，strategy 参数表示序列化策略，可以是以下几种取值之一：
+ * excludeAll：排除所有属性，只返回空对象。
+   exposeAll：暴露所有属性，包括私有属性。
+   none：不进行任何转换，直接返回原始对象。
  */
-@Controller({
-  path: 'events',
-  // version: '1',
-})
+@Controller('/events')
 @SerializeOptions({
   strategy: 'excludeAll',
 })
@@ -52,11 +51,6 @@ export class EventsController {
     private readonly attendeeRepository: Repository<Attendee>,
     private readonly eventsService: EventsService,
   ) {}
-  /**
-   * 版本控制
-   * @version('1')
-   */
-  // @version('1')
   @Get('/practice')
   async practice() {
     const result = await this.repository.find({
@@ -105,6 +99,7 @@ export class EventsController {
     return event;
   }
   @Get()
+  @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(
     new ValidationPipe({
       transform: true, // 将查询字符串转换为数字
@@ -112,7 +107,7 @@ export class EventsController {
   )
   @UseInterceptors(ClassSerializerInterceptor)
   async findAll(@Query() filter: ListEvent) {
-    this.logger.log('Hit the findAll route');
+    this.logger.log('Hit the findAll route', filter);
     const result =
       await this.eventsService.getEventsWithAttendeeCountFilteredPaginated(
         filter,
@@ -124,9 +119,18 @@ export class EventsController {
       );
     return result;
   }
+  /**
+   *
+   * @UseInterceptors() 是 NestJS 中的一个装饰器，
+   * 用于应用拦截器（Interceptor）到控制器或处理程序上。
+   * 其中，ClassSerializerInterceptor 是一个内置的拦截器，
+   * 用于将响应对象中的实体类（Entity Class）转换为平面对象（Plain Object）。
+   * 这样，我们就可以在响应中返回实体类，而不是平面对象。
+   */
   @Get(':id')
   @UseInterceptors(ClassSerializerInterceptor)
   async findOne(@Param('id', ParseIntPipe) id) {
+    this.logger.debug(`Hit the findOne route with id ${id}`);
     // 方法1
     // const event = await this.repository.findOne({
     //   where: {
@@ -149,20 +153,19 @@ export class EventsController {
 
   @Post()
   @UseGuards(AuthGuardJwt)
-  // TODO 使用过滤器后不能正常返回数据
-  // @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(ClassSerializerInterceptor)
   async create(
     @Body()
     input: CreateEventDto,
     @CurrentUser() user: User,
-  ): Promise<Event> {
-    return await this.eventsService.createEvent(input, user);
+  ) {
+    const result = await this.eventsService.createEvent(input, user);
+    return result;
   }
 
   @Patch(':id')
   @UseGuards(AuthGuardJwt)
-  // TODO 使用过滤器后不能正常返回数据
-  // @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(ClassSerializerInterceptor)
   async update(
     @Param('id')
     id,
@@ -182,8 +185,7 @@ export class EventsController {
       );
     }
 
-    const result = await this.eventsService.updateEvent(event, input);
-    return result;
+    await this.eventsService.updateEvent(event, input);
   }
 
   @Delete(':id')
