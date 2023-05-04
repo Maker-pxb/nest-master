@@ -11,6 +11,7 @@ import { AppDummy } from './app.dummy';
 import { SchoolModule } from './school/school.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
+import { SpiderModule } from './spider/spider.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UploadModule } from './upload/upload.module';
     SchoolModule,
     AuthModule,
     UploadModule,
+    SpiderModule,
   ],
   controllers: [AppController],
   providers: [
