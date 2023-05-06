@@ -16,6 +16,8 @@ export default registerAs(
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     entities: [Event, Attendee, Subject, Teacher, User, Profile],
+    // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    // autoLoadEntities: true,
     synchronize: true,
   }),
 );

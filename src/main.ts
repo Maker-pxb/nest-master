@@ -7,7 +7,7 @@ import { NextFunction, Request, Response } from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ResponseInterceptor } from '../utils/response.interceptor';
 import { HttpFilter } from '../utils/http.filter';
-
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 const blackList = ['auth/login'];
 function MiddleWare(req: Request, res: Response, next: NextFunction) {
   console.log('中间件');
@@ -45,6 +45,18 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new HttpFilter());
+
+  /**
+   * SwaggerModule.createDocument(app, options) 生成一个swagger文档
+   */
+  const options = new DocumentBuilder()
+    .addBearerAuth()
+    .setTitle('nest')
+    .setVersion('1')
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api-docs', app, document);
+
   await app.listen(3000);
 }
 

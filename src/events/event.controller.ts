@@ -31,6 +31,13 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { User } from 'src/auth/user.entity';
 import { AuthGuardJwt } from 'src/auth/auth-guard.jwt';
 import { version } from 'os';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 /**
  * version: string
@@ -43,6 +50,7 @@ import { version } from 'os';
 @SerializeOptions({
   strategy: 'excludeAll',
 })
+@ApiTags('events')
 export class EventsController {
   private readonly logger = new Logger(EventsController.name);
   constructor(
@@ -111,6 +119,28 @@ export class EventsController {
     }),
   )
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOperation({
+    summary: 'Get all events',
+    description: 'Retrieve all events from the database by pages and filters',
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'The page number of the results',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'The number of items to show per page',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'when',
+    description: 'Filter events by when they start',
+    required: false,
+    enum: [1, 2, 3, 4, 5],
+  })
   async findAll(@Query() filter: ListEvent) {
     this.logger.log('Hit the findAll route');
     const result =
@@ -125,6 +155,12 @@ export class EventsController {
     return result;
   }
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the event',
+    type: Number,
+    required: true,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   async findOne(@Param('id', ParseIntPipe) id) {
     // 方法1
