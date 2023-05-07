@@ -29,6 +29,10 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { username },
     });
+    console.log(
+      '🚀 ~ file: auth.service.ts:32 ~ AuthService ~ validateUser ~ user:',
+      user,
+    );
 
     if (!user) {
       this.logger.debug(`User ${username} not found!`);

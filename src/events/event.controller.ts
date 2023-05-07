@@ -105,7 +105,6 @@ export class EventsController {
     });
     // const event = new Event();
     const attendee = new Attendee();
-    attendee.name = 'Using the attendee name';
     // attendee.event = event;
     event.attendees.push(attendee);
     await this.repository.save(event);
@@ -161,6 +160,7 @@ export class EventsController {
     type: Number,
     required: true,
   })
+  @UseGuards(AuthGuardJwt)
   @UseInterceptors(ClassSerializerInterceptor)
   async findOne(@Param('id', ParseIntPipe) id) {
     // 方法1
@@ -174,7 +174,7 @@ export class EventsController {
     // }
     // return event;
     // 方法2
-    const event = await this.eventsService.getEvent(id);
+    const event = await this.eventsService.getEventWIthAttendeeCount(id);
 
     if (!event) {
       throw new NotFoundException();
@@ -186,26 +186,26 @@ export class EventsController {
   @Post()
   @UseGuards(AuthGuardJwt)
   // TODO 使用过滤器后不能正常返回数据
-  // @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(ClassSerializerInterceptor)
   async create(
     @Body()
     input: CreateEventDto,
     @CurrentUser() user: User,
-  ): Promise<Event> {
+  ) {
     return await this.eventsService.createEvent(input, user);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuardJwt)
   // TODO 使用过滤器后不能正常返回数据
-  // @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(ClassSerializerInterceptor)
   async update(
-    @Param('id')
+    @Param('id', ParseIntPipe)
     id,
     @Body() input: UpdateEventDto,
     @CurrentUser() user: User,
   ) {
-    const event = await this.eventsService.getEvent(id);
+    const event = await this.eventsService.findOne(id);
 
     if (!event) {
       throw new NotFoundException();
@@ -231,7 +231,7 @@ export class EventsController {
     @CurrentUser()
     user: User,
   ) {
-    const event = await this.eventsService.getEvent(id);
+    const event = await this.eventsService.getEventWIthAttendeeCount(id);
     if (!event) {
       throw new NotFoundException();
     }

@@ -23,8 +23,8 @@ async function bootstrap() {
     // logger: ['error', 'warn', 'debug'],
   });
   app.use(cors());
-  app.use(MiddleWare);
-  app.useGlobalPipes(new ValidationPipe());
+  // app.use(MiddleWare);
+  // app.useGlobalPipes(new ValidationPipe());
   app.enableVersioning({
     type: VersioningType.URI,
   });
@@ -44,7 +44,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new ResponseInterceptor());
-  app.useGlobalFilters(new HttpFilter());
+  // app.useGlobalFilters(new HttpFilter());
 
   /**
    * SwaggerModule.createDocument(app, options) 生成一个swagger文档
